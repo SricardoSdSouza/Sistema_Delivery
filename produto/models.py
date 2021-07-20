@@ -41,4 +41,5 @@ class Produto(models.Model):
 
     def __str__(self):
         return self.nome_produto
-
+class Config(models.Model):
+    Frete = models.IntegerField()

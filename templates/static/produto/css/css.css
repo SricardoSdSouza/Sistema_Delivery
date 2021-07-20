@@ -1,10 +1,10 @@
 .corBorda{
-    background-color: #F6DCE1;
+    background-color: #88d5f3;
 }
 
 .observacoes{
 
-    border: 1px solid #E58383;
+    border: 1px solid #85a3f7;
     width: 200px;
 
 }
@@ -28,7 +28,7 @@ padding-bottom: 20px;
 
 .botao{
 
-    background-color: #F69E9E;
+    background-color: #79b4f7;
     color: white;
     padding: 8px;
     border-radius: 15px;

@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from .models import Pedido, ItemPedido, CupomDesconto
 from produto.models import Produto, Categoria
 import json
+from produto.models import Config
 
 def finalizar_pedido(request, room_name='pedir'):
     if request.method == "GET":
@@ -17,8 +18,9 @@ def finalizar_pedido(request, room_name='pedir'):
                                                         'erro': erro})
     else:
         if len(request.session['carrinho']) > 0:
+            Frete = Config.objects.all()[0].Frete
             x = request.POST
-            total = sum([float(i['preco']) for i in request.session['carrinho']])
+            total = sum([float(i['preco']) for i in request.session['carrinho']])+ Frete
             cupom = CupomDesconto.objects.filter(codigo=x['cupom'])
             cupom_salvar = None
             if len(cupom) > 0 and cupom[0].ativo:
@@ -40,12 +42,21 @@ def finalizar_pedido(request, room_name='pedir'):
             
 
             lambda_func_troco = lambda x: int(x['troco_para'])-total if not x['troco_para'] == '' else ""
-            lambda_func_pagamento = lambda x: 'Cartão' if x['meio_pagamento'] == '2' else 'Dinheiro'
+            #lambda_func_pagamento = lambda x: 'Cartão' if x['meio_pagamento'] == '2' else 'Dinheiro'
+            if x ['meio_pagamento'] == '1':
+                meio_pagamento = 'dinheiro'
+            elif x ['meio_pagamento'] == '2':
+                meio_pagamento = 'cartão'
+            elif x ['meio_pagamento'] == '3':
+                meio_pagamento = 'Retirar na Loja'
+            elif x ['meio_pagamento'] == '4':
+                meio_pagamento = 'Enviar pelo correio'
+
             pedido = Pedido(usuario=x['nome'],
                             total = total,
                             troco = lambda_func_troco(x),
                             cupom = cupom_salvar,
-                            pagamento = lambda_func_pagamento(x),
+                            pagamento = meio_pagamento,
                             ponto_referencia = x['pt_referencia'],
                             cep = x['cep'],
                             rua = x['rua'],

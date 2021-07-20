@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import Produto, Categoria, Opcoes, Adicional
+from .models import Produto, Categoria, Opcoes, Adicional, Config
 
 def home(request):
     if not request.session.get('carrinho'):
@@ -103,6 +103,7 @@ def add_carrinho(request):
     return redirect(f'/ver_carrinho')
 def ver_carrinho(request):
     categorias = Categoria.objects.all()
+    Frete = Config.objects.all()[0].Frete
     dados_motrar = []
     for i in request.session['carrinho']:
         prod = Produto.objects.filter(id=i['id_produto'])
@@ -115,12 +116,13 @@ def ver_carrinho(request):
              }
         )
 
-    total = sum([float(i['preco']) for i in request.session['carrinho']])
+    total = sum([float(i['preco']) for i in request.session['carrinho']])+Frete
     
     return render(request, 'carrinho.html', {'dados': dados_motrar,
                                              'total': total,
                                              'carrinho': len(request.session['carrinho']),
                                              'categorias': categorias,
+                                             'Frete': Frete,
                                              })
 def remover_carrinho(request, id):
     request.session['carrinho'].pop(id)
